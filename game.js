@@ -4,8 +4,8 @@
    ============================================================ */
 const CONFIG = {
   TIME_LIMIT:     15,    // segundos para concluir
-  WIN_THRESHOLD:  0.99,  // fração do pneu que precisa ser coberta (0.99 = 99%)
-  BRUSH_RADIUS:   95,    // tamanho do "dedo/aplicador" (px internos do canvas)
+  WIN_THRESHOLD:  1.00,  // fração do pneu que precisa ser coberta (1.00 = 100%)
+  BRUSH_RADIUS:   80,    // tamanho do "dedo/aplicador" (px internos do canvas)
   WIN_DISPLAY:    8,     // segundos que a tela de vitória fica antes de voltar
   IDLE_RESET:     25,    // segundos sem toque -> volta pra tela inicial
 
