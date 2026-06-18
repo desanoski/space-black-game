@@ -18,16 +18,25 @@ def write_wav(name, samples):
         w.writeframes(bytes(data))
     print("ok:", name, len(samples), "amostras")
 
-# --- Pincel na BORRACHA: ruído bem abafado/grave, ondulação suave, loop ---
+# --- Pincel na BORRACHA + toque ÚMIDO: base abafada/grave somada a uma
+#     camada de ruído num filtro ressonante (timbre molhado do líquido). Loop ---
 def gen_brush():
-    n = int(0.7 * SR); out = []; lp = 0.0; lp2 = 0.0
+    n = int(0.8 * SR); out = []
+    lp = 0.0; lp2 = 0.0
+    low = 0.0; band = 0.0                         # filtro passa-banda (state-variable)
+    fc = 460.0; f = 2 * math.sin(math.pi * fc / SR); q = 0.22
     for i in range(n):
+        # base surda (borracha)
         white = random.uniform(-1, 1)
-        lp  = lp  + 0.06 * (white - lp)          # passa-baixa forte (corta o agudo)
-        lp2 = lp2 + 0.06 * (lp - lp2)            # 2º estágio = mais grave e macio
-        lfo = 0.8 + 0.2 * abs(math.sin(2 * math.pi * 4 * i / SR))  # ondulação leve
-        out.append(lp2 * lfo)
-    # normaliza o volume (independe da força do filtro)
+        lp  = lp  + 0.06 * (white - lp)
+        lp2 = lp2 + 0.06 * (lp - lp2)
+        # camada úmida (ressonância em ~460 Hz = timbre "molhado")
+        w2 = random.uniform(-1, 1)
+        low += f * band
+        high = w2 - low - q * band
+        band += f * high
+        lfo = 0.75 + 0.25 * abs(math.sin(2 * math.pi * 3 * i / SR))  # ondulação líquida lenta
+        out.append((lp2 + 0.35 * band) * lfo)
     peak = max((abs(s) for s in out), default=1.0) or 1.0
     return [0.8 * s / peak for s in out]
 

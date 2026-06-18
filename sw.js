@@ -1,5 +1,5 @@
 /* Service Worker — guarda tudo no painel para rodar 100% offline */
-const CACHE = 'space-black-v6';
+const CACHE = 'space-black-v7';
 const ASSETS = [
   './',
   './index.html',

@@ -56,7 +56,7 @@ const sfx = {
   tick:  new Audio('assets/sounds/tick.wav'),
 };
 sfx.brush.loop = true;
-sfx.brush.volume = 0.3;
+sfx.brush.volume = 0.22;
 sfx.win.volume = 0.7;
 sfx.lose.volume = 0.6;
 sfx.click.volume = 0.5;
