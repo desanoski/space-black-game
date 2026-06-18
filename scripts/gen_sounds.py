@@ -18,15 +18,18 @@ def write_wav(name, samples):
         w.writeframes(bytes(data))
     print("ok:", name, len(samples), "amostras")
 
-# --- Pincel: ruído filtrado com leve ondulação (cerdas), em loop contínuo ---
+# --- Pincel na BORRACHA: ruído bem abafado/grave, ondulação suave, loop ---
 def gen_brush():
-    n = int(0.7 * SR); out = []; lp = 0.0
+    n = int(0.7 * SR); out = []; lp = 0.0; lp2 = 0.0
     for i in range(n):
         white = random.uniform(-1, 1)
-        lp = lp + 0.18 * (white - lp)            # passa-baixa (abafa o chiado)
-        lfo = 0.55 + 0.45 * abs(math.sin(2 * math.pi * 7 * i / SR))  # textura de cerda
-        out.append(lp * lfo * 0.5)
-    return out
+        lp  = lp  + 0.06 * (white - lp)          # passa-baixa forte (corta o agudo)
+        lp2 = lp2 + 0.06 * (lp - lp2)            # 2º estágio = mais grave e macio
+        lfo = 0.8 + 0.2 * abs(math.sin(2 * math.pi * 4 * i / SR))  # ondulação leve
+        out.append(lp2 * lfo)
+    # normaliza o volume (independe da força do filtro)
+    peak = max((abs(s) for s in out), default=1.0) or 1.0
+    return [0.8 * s / peak for s in out]
 
 # --- Tom com decaimento tipo sino ---
 def tone(freq, dur, decay=5.0, harm=0.3):
