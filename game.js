@@ -11,7 +11,7 @@ const CONFIG = {
 
   // OBS: a roda já vem recortada (transparente) na própria imagem do pneu sujo,
   // então a contagem é automática. Centro/raio usados nesse recorte (referência
-  // p/ regerar se trocar a arte): centro (515,930), raio do recorte da roda 265px.
+  // p/ regerar se trocar a arte): centro (515,930), raio do recorte da roda 315px.
 };
 
 /* ---------- Elementos ---------- */
@@ -29,9 +29,8 @@ const winTimeEl    = document.getElementById('win-time');
 const confettiCv   = document.getElementById('confetti');
 const bestEl       = document.getElementById('best-time');
 
-/* ---------- Melhor tempo (recorde), salvo no aparelho ---------- */
-let bestTime = parseFloat(localStorage.getItem('sb_best'));
-if (isNaN(bestTime)) bestTime = null;
+/* ---------- Melhor tempo (recorde) — só na memória; zera ao reabrir o app ---------- */
+let bestTime = null;
 function renderBest() {
   bestEl.textContent = '🏆 Melhor: ' + (bestTime != null ? bestTime.toFixed(1) + 's' : '--');
 }
@@ -226,7 +225,6 @@ function win() {
   let msg = `Seu tempo: ${elapsed.toFixed(1)}s`;
   if (bestTime == null || elapsed < bestTime) {
     bestTime = elapsed;
-    localStorage.setItem('sb_best', bestTime.toFixed(2));
     renderBest();
     msg += '  🏆 Novo recorde!';
   }
