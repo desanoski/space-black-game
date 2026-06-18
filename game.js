@@ -45,6 +45,47 @@ function fitStage() {
 window.addEventListener('resize', fitStage);
 fitStage();
 
+/* ============================================================
+   Áudio — arquivos .wav locais (offline). Destravados no 1º toque.
+   ============================================================ */
+const sfx = {
+  brush: new Audio('assets/sounds/brush.wav'),
+  win:   new Audio('assets/sounds/win.wav'),
+  lose:  new Audio('assets/sounds/lose.wav'),
+  click: new Audio('assets/sounds/click.wav'),
+  tick:  new Audio('assets/sounds/tick.wav'),
+};
+sfx.brush.loop = true;
+sfx.brush.volume = 0.55;
+sfx.win.volume = 0.7;
+sfx.lose.volume = 0.6;
+sfx.click.volume = 0.5;
+sfx.tick.volume = 0.4;
+
+let audioUnlocked = false;
+function unlockAudio() {
+  if (audioUnlocked) return;
+  audioUnlocked = true;
+  // Toca cada som mudo uma vez para liberar o áudio nas políticas de autoplay.
+  Object.values(sfx).forEach((a) => {
+    a.muted = true;
+    const p = a.play();
+    if (p && p.then) p.then(() => { a.pause(); a.currentTime = 0; a.muted = false; }).catch(() => { a.muted = false; });
+    else { a.pause(); a.currentTime = 0; a.muted = false; }
+  });
+}
+function play(name) {
+  const a = sfx[name];
+  if (!a) return;
+  try { a.currentTime = 0; a.play().catch(() => {}); } catch (_) {}
+}
+function startBrush() {
+  if (sfx.brush.paused) { try { sfx.brush.play().catch(() => {}); } catch (_) {} }
+}
+function stopBrush() {
+  if (!sfx.brush.paused) { sfx.brush.pause(); sfx.brush.currentTime = 0; }
+}
+
 /* ---------- Carrega imagens ---------- */
 function loadImg(src) {
   return new Promise((res, rej) => {
@@ -100,6 +141,7 @@ let progress = 0;
 let rafId = null;
 let idleTimer = null;
 let autoReturnTimer = null;
+let lastTickSec = -1;
 
 function resetIdle() {
   clearTimeout(idleTimer);
@@ -110,6 +152,7 @@ function goToStart() {
   state = 'start';
   cancelAnimationFrame(rafId);
   clearTimeout(autoReturnTimer);
+  stopBrush();
   stopConfetti();
   drawDirtyFull();
   progress = 0;
@@ -124,10 +167,13 @@ function goToStart() {
 }
 
 function beginPlay() {
+  unlockAudio();
+  play('click');
   startScreen.classList.add('hidden');
   hud.classList.remove('hidden');
   state = 'playing';
   startTime = 0;          // só dispara no 1º toque sobre o pneu
+  lastTickSec = -1;
 }
 
 function loop() {
@@ -137,6 +183,8 @@ function loop() {
     const left = Math.max(0, CONFIG.TIME_LIMIT - elapsed);
     timerEl.textContent = left.toFixed(1) + 's';
     timerEl.classList.toggle('warn', left <= 5);
+    const sec = Math.ceil(left);
+    if (left <= 5 && left > 0 && sec !== lastTickSec) { lastTickSec = sec; play('tick'); }
     if (left <= 0 && progress < CONFIG.WIN_THRESHOLD) { lose(); return; }
   }
   rafId = requestAnimationFrame(loop);
@@ -155,6 +203,8 @@ function win() {
   if (state !== 'playing') return;
   state = 'win';
   cancelAnimationFrame(rafId);
+  stopBrush();
+  play('win');
   const elapsed = startTime ? (performance.now() - startTime) / 1000 : 0;
   winTimeEl.textContent = `Seu tempo: ${elapsed.toFixed(1)}s`;
   winScreen.classList.remove('hidden');
@@ -165,6 +215,8 @@ function win() {
 function lose() {
   state = 'lose';
   cancelAnimationFrame(rafId);
+  stopBrush();
+  play('lose');
   loseScreen.classList.remove('hidden');
   autoReturnTimer = setTimeout(goToStart, 6000);
 }
@@ -203,6 +255,7 @@ function onDown(e) {
   const p = toCanvas(e);
   pointers.set(e.pointerId, p);
   if (startTime === 0) { startTime = performance.now(); loop(); }  // 1º toque = inicia timer
+  startBrush();
   stroke(p.x, p.y, p.x, p.y);
 }
 function onMove(e) {
@@ -217,6 +270,7 @@ function onMove(e) {
 }
 function onUp(e) {
   pointers.delete(e.pointerId);
+  if (pointers.size === 0) stopBrush();   // parou de aplicar
   if (state === 'playing') updateProgress();
 }
 
@@ -228,8 +282,8 @@ window.addEventListener('pointerdown', resetIdle);
 
 /* ---------- Botões ---------- */
 document.getElementById('start-btn').addEventListener('click', beginPlay);
-document.getElementById('again-btn').addEventListener('click', goToStart);
-document.getElementById('retry-btn').addEventListener('click', goToStart);
+document.getElementById('again-btn').addEventListener('click', () => { play('click'); goToStart(); });
+document.getElementById('retry-btn').addEventListener('click', () => { play('click'); goToStart(); });
 startScreen.addEventListener('click', (e) => { if (e.target === startScreen) beginPlay(); });
 
 /* ============================================================

@@ -1,5 +1,5 @@
 /* Service Worker — guarda tudo no painel para rodar 100% offline */
-const CACHE = 'space-black-v4';
+const CACHE = 'space-black-v5';
 const ASSETS = [
   './',
   './index.html',
@@ -12,6 +12,11 @@ const ASSETS = [
   './assets/logo.png',
   './assets/bg.png',
   './assets/orbitron.woff2',
+  './assets/sounds/brush.wav',
+  './assets/sounds/win.wav',
+  './assets/sounds/lose.wav',
+  './assets/sounds/click.wav',
+  './assets/sounds/tick.wav',
 ];
 
 self.addEventListener('install', (e) => {
