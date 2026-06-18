@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <title>SPACE BLACK — Desafio do Pneu</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Palco do jogo (proporção 1080x1920) -->
+  <div id="stage">
+    <!-- Fundo cenário -->
+    <img id="bg" src="assets/bg.png" alt="" />
+
+    <!-- Cabeçalho: logo + nome do produto -->
+    <header id="topbar">
+      <img id="logo" src="assets/logo.png" alt="Alfa Distribuidora" />
+    </header>
+
+    <!-- HUD: timer + barra de progresso (escondido até o jogo começar) -->
+    <div id="hud" class="hidden">
+      <div id="timer">20.0s</div>
+      <div id="progress-wrap">
+        <div id="progress-bar"></div>
+        <span id="progress-label">0%</span>
+      </div>
+    </div>
+
+    <!-- Área do pneu (canvas empilhados) -->
+    <div id="tire-area">
+      <canvas id="clean"></canvas>
+      <canvas id="dirty"></canvas>
+    </div>
+
+    <!-- Rodapé: produto -->
+    <footer id="bottombar">
+      <img id="product" src="assets/product.png" alt="SPACE BLACK" />
+      <div id="product-name">SPACE&nbsp;BLACK</div>
+    </footer>
+
+    <!-- Tela inicial / atrair público -->
+    <div id="start-screen" class="overlay">
+      <img class="overlay-logo" src="assets/logo.png" alt="" />
+      <h1>Aplique o <span class="hl">SPACE BLACK</span><br>e ganhe um prêmio</h1>
+      <p>Passe o dedo dando brilho ao pneu<br>antes do tempo acabar!</p>
+      <button id="start-btn">TOQUE PARA COMEÇAR</button>
+      <div class="hand">👆</div>
+    </div>
+
+    <!-- Tela de vitória -->
+    <div id="win-screen" class="overlay hidden">
+      <canvas id="confetti"></canvas>
+      <div class="win-content">
+        <h1>VOCÊ <span class="hl">GANHOU!</span> 🎉</h1>
+        <p>Pneu com brilho de outro mundo.<br><strong>Retire seu brinde no balcão!</strong></p>
+        <div id="win-time"></div>
+        <img class="overlay-logo small" src="assets/logo.png" alt="" />
+        <button id="again-btn">JOGAR DE NOVO</button>
+      </div>
+    </div>
+
+    <!-- Tela de tempo esgotado (raro) -->
+    <div id="lose-screen" class="overlay hidden">
+      <div class="win-content">
+        <div class="sad">😢</div>
+        <h1>Que pena!</h1>
+        <p>Não foi dessa vez.<br>O que acha de tentar novamente?</p>
+        <button id="retry-btn">TENTAR DE NOVO</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
