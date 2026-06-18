@@ -166,7 +166,15 @@ function goToStart() {
   startScreen.classList.remove('hidden');
 }
 
+function goFullscreen() {
+  const el = document.documentElement;
+  if (!document.fullscreenElement && el.requestFullscreen) {
+    el.requestFullscreen().catch(() => {});
+  }
+}
+
 function beginPlay() {
+  goFullscreen();   // o toque no botão é o "gesto" que o navegador exige
   unlockAudio();
   play('click');
   startScreen.classList.add('hidden');
