@@ -3,7 +3,7 @@
    Ajuste fácil dos parâmetros aqui em cima:
    ============================================================ */
 const CONFIG = {
-  TIME_LIMIT:     20,    // segundos para concluir
+  TIME_LIMIT:     15,    // segundos para concluir
   WIN_THRESHOLD:  0.95,  // fração do pneu que precisa ser coberta (0.95 = 95%)
   BRUSH_RADIUS:   95,    // tamanho do "dedo/aplicador" (px internos do canvas)
   WIN_DISPLAY:    8,     // segundos que a tela de vitória fica antes de voltar
@@ -27,6 +27,15 @@ const winScreen    = document.getElementById('win-screen');
 const loseScreen   = document.getElementById('lose-screen');
 const winTimeEl    = document.getElementById('win-time');
 const confettiCv   = document.getElementById('confetti');
+const bestEl       = document.getElementById('best-time');
+
+/* ---------- Melhor tempo (recorde), salvo no aparelho ---------- */
+let bestTime = parseFloat(localStorage.getItem('sb_best'));
+if (isNaN(bestTime)) bestTime = null;
+function renderBest() {
+  bestEl.textContent = '🏆 Melhor: ' + (bestTime != null ? bestTime.toFixed(1) + 's' : '--');
+}
+renderBest();
 
 const cctx = cleanCanvas.getContext('2d');
 const dctx = dirtyCanvas.getContext('2d', { willReadFrequently: true });
@@ -214,7 +223,14 @@ function win() {
   stopBrush();
   play('win');
   const elapsed = startTime ? (performance.now() - startTime) / 1000 : 0;
-  winTimeEl.textContent = `Seu tempo: ${elapsed.toFixed(1)}s`;
+  let msg = `Seu tempo: ${elapsed.toFixed(1)}s`;
+  if (bestTime == null || elapsed < bestTime) {
+    bestTime = elapsed;
+    localStorage.setItem('sb_best', bestTime.toFixed(2));
+    renderBest();
+    msg += '  🏆 Novo recorde!';
+  }
+  winTimeEl.textContent = msg;
   winScreen.classList.remove('hidden');
   startConfetti();
   autoReturnTimer = setTimeout(goToStart, CONFIG.WIN_DISPLAY * 1000);
