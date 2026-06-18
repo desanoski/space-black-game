@@ -4,14 +4,14 @@
    ============================================================ */
 const CONFIG = {
   TIME_LIMIT:     15,    // segundos para concluir
-  WIN_THRESHOLD:  0.95,  // fração do pneu que precisa ser coberta (0.95 = 95%)
+  WIN_THRESHOLD:  0.97,  // fração do pneu que precisa ser coberta (0.97 = 97%)
   BRUSH_RADIUS:   95,    // tamanho do "dedo/aplicador" (px internos do canvas)
   WIN_DISPLAY:    8,     // segundos que a tela de vitória fica antes de voltar
   IDLE_RESET:     25,    // segundos sem toque -> volta pra tela inicial
 
   // OBS: a roda já vem recortada (transparente) na própria imagem do pneu sujo,
   // então a contagem é automática. Centro/raio usados nesse recorte (referência
-  // p/ regerar se trocar a arte): centro (515,930), raio do recorte da roda 315px.
+  // p/ regerar se trocar a arte): centro real do aro (530,935), raio do recorte 296px.
 };
 
 /* ---------- Elementos ---------- */
